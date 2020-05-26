@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meat charset="utf-8" />
+    <title>upload | RR player v0.3</title>
+  </head>
+  <body>
+    <h1 align="center">Upload</h1>
+    
+    <form id = form1 autocomplete="off">
+      TrGroupName: <input type="text" id="txt" name="TrGroupName" value = "" size="30"><br>
+      <div id ="filecontainer">
+      <input type="file" id="setfile"><br>
+      </div>
+      <input type="submit" value="Upload">
+    </form>
+    <button id="addbutton">add track</button>
+    
+    <script>
+        let addbutton = document.getElementById("addbutton");
+      addbutton.addEventListener("click", function(){
+        let boxes = document.getElementById("setfile");
+        let clone = boxes.firstElementChild.cloneNode(true);
+        boxes.appendChild(clone);
+        })
+    </script>
+    
+    <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
+    
+	<script>
+	  // Your web app's Firebase configuration
+	  var firebaseConfig = {
+	  apiKey: "AIzaSyB8-eBU1LF49YdjBffzFb_FLRfMm83ay7A",
+	  authDomain: "zinc-hall-176114.firebaseapp.com",
+	  databaseURL: "https://zinc-hall-176114.firebaseio.com",
+	  projectId: "zinc-hall-176114",
+	  storageBucket: "zinc-hall-176114.appspot.com",
+	  messagingSenderId: "734297437464",
+	  appId: "1:734297437464:web:f7e0a83d51527d4a"
+	  };
+	  // Initialize Firebase
+	  firebase.initializeApp(firebaseConfig);
+	</script>
+
+	<script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-auth.js"></script>
+	<script src="https://cdn.firebase.com/libs/firebaseui/2.4.1/firebaseui.js"></script>
+	<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.4.1/firebaseui.css" />
+	<script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-firestore.js"></script>
+	 <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-storage.js"></script>
+
+	 <script>
+	   firebase.auth().onAuthStateChanged( (user) => {
+	   let status = document.querySelector('#status');
+	   if(user) {
+	   console.log(user);
+	   console.log('Singed-in');
+	   } else {
+	   console.log('NOT Singed-in');
+	   }
+
+	   });
+	 </script>
+	
+	<script type="text/javascript">
+	  const form = document.querySelector('form');
+	  const setfile = [];
+	  setfile.push(document.getElementById("setfile"));
+	  const storage = firebase.storage();
+
+	  var filearray = [];
+	  var file_name = [];
+	  var blob;
+	  var blobarray = [];
+	  var utl;
+	  var setfilecount = 0;
+	  var filecontainer = document.getElementById('filecontainer');
+	  
+	  function addFileEvent(){
+	  	setfile[setfilecount].addEventListener("change", e => {
+	  	console.log("change");
+	    var file = e.target.files;
+	    filearray.push(e.target.files);
+	    file_name.push(file[0].name);
+	    setfilecount++;
+	    console.log(file_name);
+	    console.log(filearray)
+	    filecontainer.insertAdjacentHTML('beforeend', '<input type=file id=setfile' + setfilecount + '><br>');
+	    setfile.push(document.getElementById("setfile" + setfilecount))
+	    addFileEvent();
+	    blob = new Blob(file, { type: "audio/mp3" }); // make blob
+	    blobarray.push(blob);
+ 	    console.warn(blob);
+	  });
+	  	
+	  }
+	  
+	  
+	  setfile[0].addEventListener("change", e => {
+	  	console.log("change");
+	    var file = e.target.files;
+	    filearray.push(e.target.files);
+	    file_name.push(file[0].name);
+	    setfilecount++;
+	    filecontainer.insertAdjacentHTML('beforeend', '<input type=file id=setfile' + setfilecount + '><br>');
+	    setfile.push(document.getElementById("setfile" + setfilecount))
+	    addFileEvent();
+	    blob = new Blob(file, { type: "audio/mp3" }); // make blob
+	    blobarray.push(blob);
+ 	    console.warn(blob);
+	  });
+	  
+	  function UploadtoDB(foldername,filename,file){
+	  	var uploadRef = storage.ref().child(foldername + '/' + filename);
+	    uploadRef.put(file).then(snapshot => {
+	      console.log(snapshot.state);
+	      url = uploadRef.getDownloadURL();
+	      console.log(url);
+	    }).catch(error => {
+	      console.log(error);
+	    });
+	  	
+	  }
+	  
+	  form.addEventListener('submit', e => {
+	    e.preventDefault(); // void page redirect
+	    var textbox = document.forms.form1.txt.value;
+	    console.log(textbox);
+	    if (textbox){
+	    	for (var i = 0; i < filearray.length; ++i){
+	    		console.log(filearray[i]);
+	    	UploadtoDB(textbox,file_name[i],blobarray[i]);
+	    	}
+	    }
+	  });
+	</script>
+  </body>
+</html>
