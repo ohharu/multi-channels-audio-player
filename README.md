@@ -1,5 +1,5 @@
 # multi-5G
-
+Stereophonic music player using multiple sound sources
 # Contributer
 Yuki KOYAMA <je6hbc@d-io.com>
 Kenta KANASAKI <kenta@enta.tokyo>
